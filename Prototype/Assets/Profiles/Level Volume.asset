@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Value: 2
   intensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 2
     min: 0
   maximumVelocity:
     m_OverrideState: 0
@@ -84,7 +84,7 @@ MonoBehaviour:
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.15
+    m_Value: 0.263
     min: 0
     max: 1
   scatter:
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: VolumeGlobal
+  m_Name: Level Volume
   m_EditorClassIdentifier: 
   components:
   - {fileID: 1359070828411649799}
@@ -258,12 +258,10 @@ MonoBehaviour:
   - {fileID: 6640133647794636954}
   - {fileID: 2759069934644561995}
   - {fileID: 8300247594604814326}
-  - {fileID: 2112682869544596416}
   - {fileID: 5002876554434076654}
   - {fileID: -2223948172287066284}
   - {fileID: -3969488579639410846}
   - {fileID: 747098994415714109}
-  - {fileID: 4566301752631259820}
 --- !u!114 &747098994415714109
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -317,72 +315,6 @@ MonoBehaviour:
   fogType:
     m_OverrideState: 1
     m_Value: 0
---- !u!114 &2112682869544596416
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56b145d2b9ee1ac4f846968484e7485a, type: 3}
-  m_Name: ContactShadows
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  quality:
-    m_OverrideState: 1
-    m_Value: 2
-  enable:
-    m_OverrideState: 1
-    m_Value: 1
-  length:
-    m_OverrideState: 1
-    m_Value: 0.1
-    min: 0
-    max: 1
-  opacity:
-    m_OverrideState: 0
-    m_Value: 1
-    min: 0
-    max: 1
-  distanceScaleFactor:
-    m_OverrideState: 1
-    m_Value: 0.5
-    min: 0
-    max: 1
-  maxDistance:
-    m_OverrideState: 1
-    m_Value: 100
-    min: 0
-  minDistance:
-    m_OverrideState: 1
-    m_Value: 1
-    min: 0
-  fadeDistance:
-    m_OverrideState: 1
-    m_Value: 10
-    min: 0
-  fadeInDistance:
-    m_OverrideState: 1
-    m_Value: 2
-    min: 0
-  rayBias:
-    m_OverrideState: 0
-    m_Value: 0.2
-    min: 0
-    max: 1
-  thicknessScale:
-    m_OverrideState: 1
-    m_Value: 0.1
-    min: 0.02
-    max: 1
-  m_SampleCount:
-    m_OverrideState: 1
-    m_Value: 12
-    min: 4
-    max: 64
 --- !u!114 &2759069934644561995
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -502,25 +434,9 @@ MonoBehaviour:
   directionalLightsOnly:
     m_OverrideState: 0
     m_Value: 0
---- !u!114 &4566301752631259820
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e17fad69ea181b4483974138b566975, type: 3}
-  m_Name: ScreenSpaceRefraction
-  m_EditorClassIdentifier: 
-  active: 1
-  m_AdvancedMode: 0
-  screenFadeDistance:
-    m_OverrideState: 1
-    m_Value: 0.001
-    min: 0.001
-    max: 1
+  filter:
+    m_OverrideState: 0
+    m_Value: 0
 --- !u!114 &5002876554434076654
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -543,7 +459,7 @@ MonoBehaviour:
     m_Value: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 1.3
     min: 0
     max: 4
   directLightingStrength:

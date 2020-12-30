@@ -6,41 +6,44 @@ namespace ProjectCondensed.Systems
     public class PlayerMovement : MonoBehaviour
     {
         //Assignables
-        public Transform playerCam;
-        public Transform orientation;
+        [SerializeField] private Transform playerCam;
+        [SerializeField] private Transform orientation;
 
         //Other
         private Rigidbody rb;
+        private PlayerFeedback feedback;
 
         //Rotation and look
         private float xRotation;
-        public float sensitivity = 50f;
+        [SerializeField] private float sensitivity = 50f;
         private float sensMultiplier = 1f;
 
         //Movement
-        public float moveSpeed = 4500;
-        public float maxSpeed = 20;
-        public bool grounded;
-        public LayerMask whatIsGround;
+        [SerializeField] private float moveSpeed = 4500;
+        [SerializeField] private float maxSpeed = 20;
+        [SerializeField] private bool grounded;
+        [SerializeField] private LayerMask whatIsGround;
 
-        public float counterMovement = 0.175f;
+        [SerializeField] private float counterMovement = 0.175f;
         private float threshold = 0.01f;
-        public float maxSlopeAngle = 35f;
+        [SerializeField] private float maxSlopeAngle = 35f;
+
+        private float fallDuration;
 
         //Crouch & Slide
         private Vector3 crouchScale = new Vector3(1, 0.5f, 1);
         private Vector3 playerScale;
-        public float slideForce = 400;
-        public float slideCounterMovement = 0.2f;
+        [SerializeField] private float slideForce = 400;
+        [SerializeField] private float slideCounterMovement = 0.2f;
 
         //Jumping
         private bool readyToJump = true;
         private float jumpCooldown = 0.25f;
-        public float jumpForce = 550f;
+        [SerializeField] private float jumpForce = 550f;
 
         //Input
-        float x, y;
-        bool jumping, sprinting, crouching;
+        private float x, y;
+        private bool jumping, sprinting, crouching;
 
         //Sliding
         private Vector3 normalVector = Vector3.up;
@@ -54,6 +57,7 @@ namespace ProjectCondensed.Systems
         void Start()
         {
             playerScale = transform.localScale;
+            feedback = GetComponent<PlayerFeedback>();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
@@ -65,14 +69,15 @@ namespace ProjectCondensed.Systems
 
         private void Update()
         {
-            MyInput();
+            FindInputs();
             Look();
+            CalculateMagnitude();
         }
 
         /// <summary>
         /// Find user input. Should put this in its own class but im lazy
         /// </summary>
-        private void MyInput()
+        private void FindInputs()
         {
             x = Input.GetAxisRaw("Horizontal");
             y = Input.GetAxisRaw("Vertical");
@@ -99,6 +104,22 @@ namespace ProjectCondensed.Systems
             }
         }
 
+        private void CalculateMagnitude()
+        {
+            if (grounded)
+            {
+                if (fallDuration > 0)
+                {
+                    feedback.Land(fallDuration);
+                }
+                fallDuration = 0;
+            }
+            else
+            {
+                fallDuration += Time.fixedDeltaTime;
+            }
+        }
+
         private void StopCrouch()
         {
             transform.localScale = playerScale;
@@ -113,6 +134,8 @@ namespace ProjectCondensed.Systems
             //Find actual velocity relative to where player is looking
             Vector2 mag = FindVelRelativeToLook();
             float xMag = mag.x, yMag = mag.y;
+            
+            CheckVault();
 
             //Counteract sliding and sloppy movement
             CounterMovement(x, y, mag);
@@ -197,6 +220,48 @@ namespace ProjectCondensed.Systems
             //Perform the rotations
             playerCam.transform.localRotation = Quaternion.Euler(xRotation, desiredX, 0);
             orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0);
+        }
+
+        private void CheckVault()
+        {
+            canVault();
+        }
+        
+        private bool canVault()
+        {
+            bool result = false;
+
+            RaycastHit _hitInfo;
+            Vector3 origin = transform.position;
+            origin.y += 1;
+            Vector3 dir = transform.forward;
+
+            float dis = 1;
+
+            Debug.DrawRay(origin, dir * dis);
+
+            if (Physics.Raycast(origin, dir, out _hitInfo, dis))
+            {
+                Vector3 origin2 = origin;
+                origin2.y += .5f;
+
+                Debug.DrawRay(origin2, dir * dis);
+                if (Physics.Raycast(origin2, dir, out _hitInfo, dis))
+                {
+
+                }
+                else
+                {
+                    Vector3 origin3 = origin2 + dir * dis;
+                    Debug.DrawRay(origin3, -Vector3.up * 1.5f);
+                    if (Physics.Raycast(origin3, -Vector3.up, out _hitInfo, 1.5f))
+                    {
+
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void CounterMovement(float x, float y, Vector2 mag)

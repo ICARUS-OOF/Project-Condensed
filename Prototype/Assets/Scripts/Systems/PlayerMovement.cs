@@ -1,4 +1,3 @@
-using ProjectCondensed.Attributes;
 using ProjectCondensed.Usage;
 using System;
 using System.Collections;
@@ -243,9 +242,10 @@ namespace ProjectCondensed.Systems
                     Vector3 vaultDirection3 = new Vector3(playerCam.forward.x, topVaultPoint.forward.y, playerCam.forward.z);
                     if (!Physics.Raycast(topVaultPoint.transform.position, vaultDirection3, .5f))
                     {
-                        Vector3 vaultPos = vaultDirection2 * .3f;
+                        Vector3 vaultPos = vaultDirection2 * .279f;
                         playerRefInstance.camMovement.lerpTime = 5f;
                         transform.position += vaultPos + Vector3.up * .4f;
+                        rb.AddForce(new Vector3(vaultDirection3.x, 0f, vaultDirection3.z));
                         StartCoroutine(ResetCameraLerp());
                     }
                 }

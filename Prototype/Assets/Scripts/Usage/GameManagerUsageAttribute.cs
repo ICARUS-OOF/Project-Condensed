@@ -1,6 +1,6 @@
 using ProjectCondensed.Managers;
 using System;
-namespace ProjectCondensed.Attributes
+namespace ProjectCondensed.Usage
 {
     public class GameManagerUsageAttribute : Attribute
     {

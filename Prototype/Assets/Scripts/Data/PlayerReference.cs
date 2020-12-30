@@ -17,5 +17,6 @@ namespace ProjectCondensed.Data
         #endregion
         public PlayerMovement playerMovement;
         public CameraMovement camMovement;
+        public Animator camAnimator;
     }
 }

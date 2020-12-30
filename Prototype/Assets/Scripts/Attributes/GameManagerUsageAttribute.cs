@@ -1,11 +1,11 @@
 using ProjectCondensed.Managers;
 using System;
-namespace ProjectCondensed.Utils
+namespace ProjectCondensed.Attributes
 {
     public class GameManagerUsageAttribute : Attribute
     {
         protected GameManager gmInstance;
-        protected void FindGMInstance()
+        protected void FindInstance()
         {
             gmInstance = GameManager.GetInstance();
         }

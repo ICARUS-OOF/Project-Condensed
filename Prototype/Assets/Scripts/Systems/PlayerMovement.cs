@@ -1,9 +1,12 @@
+using ProjectCondensed.Attributes;
+using ProjectCondensed.Usage;
 using System;
+using System.Collections;
 using UnityEngine;
 
 namespace ProjectCondensed.Systems
 {
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : PlayerReferenceUsage
     {
         //Assignables
         [SerializeField] private Transform playerCam;
@@ -15,9 +18,9 @@ namespace ProjectCondensed.Systems
 
         //Rotation and look
         private float xRotation;
-        [SerializeField] private float sensitivity = 50f;
         private float sensMultiplier = 1f;
-
+        [SerializeField] private float sensitivity = 50f;
+        
         //Movement
         [SerializeField] private float moveSpeed = 4500;
         [SerializeField] private float maxSpeed = 20;
@@ -35,6 +38,11 @@ namespace ProjectCondensed.Systems
         private Vector3 playerScale;
         [SerializeField] private float slideForce = 400;
         [SerializeField] private float slideCounterMovement = 0.2f;
+
+        //Vaulting
+        [SerializeField] private Transform bottomVaultPoint;
+        [SerializeField] private Transform middleVaultPoint;
+        [SerializeField] private Transform topVaultPoint;
 
         //Jumping
         private bool readyToJump = true;
@@ -56,6 +64,7 @@ namespace ProjectCondensed.Systems
 
         void Start()
         {
+            FindInstance();
             playerScale = transform.localScale;
             feedback = GetComponent<PlayerFeedback>();
             Cursor.lockState = CursorLockMode.Locked;
@@ -134,8 +143,8 @@ namespace ProjectCondensed.Systems
             //Find actual velocity relative to where player is looking
             Vector2 mag = FindVelRelativeToLook();
             float xMag = mag.x, yMag = mag.y;
-            
-            CheckVault();
+
+            Vaulting();
 
             //Counteract sliding and sloppy movement
             CounterMovement(x, y, mag);
@@ -222,46 +231,31 @@ namespace ProjectCondensed.Systems
             orientation.transform.localRotation = Quaternion.Euler(0, desiredX, 0);
         }
 
-        private void CheckVault()
+        private void Vaulting()
         {
-            canVault();
-        }
-        
-        private bool canVault()
-        {
-            bool result = false;
-
-            RaycastHit _hitInfo;
-            Vector3 origin = transform.position;
-            origin.y += 1;
-            Vector3 dir = transform.forward;
-
-            float dis = 1;
-
-            Debug.DrawRay(origin, dir * dis);
-
-            if (Physics.Raycast(origin, dir, out _hitInfo, dis))
+            RaycastHit _hit;
+            Vector3 vaultDirection1 = new Vector3(playerCam.forward.x, bottomVaultPoint.forward.y, playerCam.forward.z);
+            if (Physics.Raycast(bottomVaultPoint.transform.position, vaultDirection1, .5f))
             {
-                Vector3 origin2 = origin;
-                origin2.y += .5f;
-
-                Debug.DrawRay(origin2, dir * dis);
-                if (Physics.Raycast(origin2, dir, out _hitInfo, dis))
+                Vector3 vaultDirection2 = new Vector3(playerCam.forward.x, middleVaultPoint.forward.y, playerCam.forward.z);
+                if (!Physics.Raycast(middleVaultPoint.transform.position, vaultDirection2, out _hit, .5f))
                 {
-
-                }
-                else
-                {
-                    Vector3 origin3 = origin2 + dir * dis;
-                    Debug.DrawRay(origin3, -Vector3.up * 1.5f);
-                    if (Physics.Raycast(origin3, -Vector3.up, out _hitInfo, 1.5f))
+                    Vector3 vaultDirection3 = new Vector3(playerCam.forward.x, topVaultPoint.forward.y, playerCam.forward.z);
+                    if (!Physics.Raycast(topVaultPoint.transform.position, vaultDirection3, .5f))
                     {
-
+                        Vector3 vaultPos = vaultDirection2 * .3f;
+                        playerRefInstance.camMovement.lerpTime = 5f;
+                        transform.position += vaultPos + Vector3.up * .4f;
+                        StartCoroutine(ResetCameraLerp());
                     }
                 }
             }
-
-            return result;
+        }
+        
+        private IEnumerator ResetCameraLerp()
+        {
+            yield return new WaitForSeconds(.5f);
+            playerRefInstance.camMovement.lerpTime = 300f;
         }
 
         private void CounterMovement(float x, float y, Vector2 mag)
@@ -358,6 +352,5 @@ namespace ProjectCondensed.Systems
         {
             grounded = false;
         }
-
     }
 }

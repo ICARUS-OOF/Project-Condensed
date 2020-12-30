@@ -5,9 +5,11 @@ namespace ProjectCondensed.Systems
     {
         public Transform player;
 
+        public float lerpTime = 300f;
+
         void Update()
         {
-            transform.position = player.transform.position;
+            transform.position = Vector3.Lerp(transform.position, player.transform.position, lerpTime * Time.fixedDeltaTime);
         }
     }
 }

@@ -1,3 +1,4 @@
+using ProjectCondensed.Managers;
 using ProjectCondensed.Usage;
 using System;
 using System.Collections;
@@ -119,6 +120,10 @@ namespace ProjectCondensed.Systems
                 if (fallDuration > 0)
                 {
                     feedback.Land(fallDuration);
+                    if (InputManager.IsMovingForward())
+                    {
+                        rb.AddForce(new Vector3(playerCam.forward.x, 0f, playerCam.forward.z) * 50f);
+                    }
                 }
                 fallDuration = 0;
             }

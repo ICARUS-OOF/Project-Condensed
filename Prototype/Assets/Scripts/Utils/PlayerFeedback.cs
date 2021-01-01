@@ -15,7 +15,7 @@ namespace ProjectCondensed.Systems
 
         public void Land(float airDuration)
         {
-            if (airDuration >= 5.6f)
+            if (airDuration >= 4.6f)
             {
                 playerRefInstance.camAnimator.SetTrigger("Land");
                 GameObject _particleInstance = Instantiate(landingParticles, landingPoint.position, landingPoint.rotation);

@@ -1,4 +1,5 @@
 using UnityEngine;
+
 namespace ProjectCondensed.Systems
 {
     public class CameraMovement : MonoBehaviour

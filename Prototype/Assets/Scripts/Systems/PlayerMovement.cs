@@ -1,12 +1,13 @@
+using ProjectCondensed.Data;
+using ProjectCondensed.Interfaces;
 using ProjectCondensed.Managers;
-using ProjectCondensed.Usage;
 using System;
 using System.Collections;
 using UnityEngine;
 
 namespace ProjectCondensed.Systems
 {
-    public class PlayerMovement : PlayerReferenceUsage
+    public class PlayerMovement : MonoBehaviour, ISingleDataUsage<PlayerReference>
     {
         //Assignables
         [SerializeField] private Transform playerCam;
@@ -15,6 +16,7 @@ namespace ProjectCondensed.Systems
         //Other
         private Rigidbody rb;
         private PlayerFeedback feedback;
+        public PlayerReference UsageField { get; set; }
 
         //Rotation and look
         private float xRotation;
@@ -64,7 +66,7 @@ namespace ProjectCondensed.Systems
 
         void Start()
         {
-            FindInstance();
+            UsageField = PlayerReference.GetInstance();
             playerScale = transform.localScale;
             feedback = GetComponent<PlayerFeedback>();
             Cursor.lockState = CursorLockMode.Locked;
@@ -88,15 +90,15 @@ namespace ProjectCondensed.Systems
         /// </summary>
         private void FindInputs()
         {
-            x = Input.GetAxisRaw("Horizontal");
-            y = Input.GetAxisRaw("Vertical");
-            jumping = Input.GetButton("Jump");
-            crouching = Input.GetKey(KeyCode.LeftControl);
+            x = InputManager.GetHorizontalAxis();
+            y = InputManager.GetVerticalAxis();
+            jumping = InputManager.IsJumping();
+            crouching = InputManager.IsCrouching();
 
             //Crouching
-            if (Input.GetKeyDown(KeyCode.LeftControl))
+            if (Input.GetKeyDown(InputManager.crouchKey))
                 StartCrouch();
-            if (Input.GetKeyUp(KeyCode.LeftControl))
+            if (Input.GetKeyUp(InputManager.crouchKey))
                 StopCrouch();
         }
 
@@ -117,6 +119,15 @@ namespace ProjectCondensed.Systems
         {
             if (grounded)
             {
+                Vector3 playerVelocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                float playerVelocityMagnitude = playerVelocity.magnitude;
+                if (playerVelocityMagnitude > .4f)
+                {
+                    feedback.Footsteps();
+                } else
+                {
+                    feedback.AirAudio();
+                }
                 if (fallDuration > 0)
                 {
                     feedback.Land(fallDuration);
@@ -129,6 +140,7 @@ namespace ProjectCondensed.Systems
             }
             else
             {
+                feedback.AirAudio();
                 fallDuration += Time.fixedDeltaTime;
             }
         }
@@ -248,7 +260,7 @@ namespace ProjectCondensed.Systems
                     if (!Physics.Raycast(topVaultPoint.transform.position, vaultDirection3, .5f))
                     {
                         Vector3 vaultPos = vaultDirection2 * .279f;
-                        playerRefInstance.camMovement.lerpTime = 5f;
+                        UsageField.camMovement.lerpTime = 5f;
                         transform.position += vaultPos + Vector3.up * .4f;
                         rb.AddForce(new Vector3(vaultDirection3.x, 0f, vaultDirection3.z));
                         StartCoroutine(ResetCameraLerp());
@@ -260,7 +272,7 @@ namespace ProjectCondensed.Systems
         private IEnumerator ResetCameraLerp()
         {
             yield return new WaitForSeconds(.5f);
-            playerRefInstance.camMovement.lerpTime = 300f;
+            UsageField.camMovement.lerpTime = 300f;
         }
 
         private void CounterMovement(float x, float y, Vector2 mag)
